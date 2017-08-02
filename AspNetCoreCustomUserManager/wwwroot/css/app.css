@@ -1,0 +1,70 @@
+﻿/* Copyright © 2017 Dmitry Sikorsky. All rights reserved. */
+/* Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. */
+
+/* Global things */
+html, body {
+  color: #323232;
+  font: normal 20px 'Open Sans', sans-serif;
+  line-height: 1.5;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  padding: 50px;
+}
+
+h1, h2 {
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: 60px;
+}
+
+h2 {
+  font-size: 40px;
+  margin-top: 40px;
+}
+
+select, button, label {
+  font: normal 20px 'Open Sans', sans-serif;
+}
+
+/* Field */
+.field {
+}
+
+.field__validation-message {
+  color: red;
+  font-style: italic;
+  display: block;
+  margin-top: 10px;
+}
+
+/* Buttons */
+.buttons {
+}
+
+/* Form */
+.form {
+}
+
+.form__field {
+  margin-top: 20px;
+}
+
+.form__buttons {
+  margin-top: 40px;
+}
+
+/* Marker */
+.marker {
+}
+
+.marker--secondary {
+  color: #999;
+}

@@ -1,7 +1,6 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using AspNetCoreCustomUserManager.Data;
 using AspNetCoreCustomUserManager.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,12 +8,10 @@ namespace AspNetCoreCustomUserManager
 {
   public class HomeController : Controller
   {
-    private Storage storage;
     private IUserManager userManager;
 
-    public HomeController(Storage storage, IUserManager userManager)
+    public HomeController(IUserManager userManager)
     {
-      this.storage = storage;
       this.userManager = userManager;
     }
 

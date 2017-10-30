@@ -32,6 +32,13 @@ namespace AspNetCoreCustomUserManager
         options => options.UseSqlite(this.configuration.GetConnectionString("DefaultConnection"))
       );
 
+      services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
+          {
+            options.ExpireTimeSpan = TimeSpan.FromDays(7);
+          }
+        );
+
       services.AddScoped<IUserManager, UserManager>();
       services.AddMvc();
     }
@@ -48,17 +55,7 @@ namespace AspNetCoreCustomUserManager
         applicationBuilder.UseBrowserLink();
       }
 
-      applicationBuilder.UseCookieAuthentication(
-        new CookieAuthenticationOptions()
-        {
-          AuthenticationScheme = CookieAuthenticationDefaults.AuthenticationScheme,
-          AutomaticAuthenticate = true,
-          AutomaticChallenge = true,
-          CookieName = "AspNetCoreCustomUserManager",
-          ExpireTimeSpan = TimeSpan.FromMinutes(10)
-        }
-      );
-
+      applicationBuilder.UseAuthentication();
       applicationBuilder.UseStaticFiles();
       applicationBuilder.UseMvcWithDefaultRoute();
     }

@@ -7,9 +7,9 @@ using System.Linq;
 using System.Security.Claims;
 using AspNetCoreCustomUserManager.Data;
 using AspNetCoreCustomUserManager.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
 
 namespace AspNetCoreCustomUserManager
 {
@@ -44,14 +44,14 @@ namespace AspNetCoreCustomUserManager
       ClaimsIdentity identity = new ClaimsIdentity(this.GetUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
       ClaimsPrincipal principal = new ClaimsPrincipal(identity);
 
-      await httpContext.Authentication.SignInAsync(
+      await httpContext.SignInAsync(
         CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties() { IsPersistent = isPersistent }
       );
     }
 
     public async void SignOut(HttpContext httpContext)
     {
-      await httpContext.Authentication.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+      await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
     public int GetCurrentUserId(HttpContext httpContext)

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.IO;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace AspNetCoreCustomUserManager
@@ -10,15 +11,17 @@ namespace AspNetCoreCustomUserManager
   {
     public static void Main(string[] args)
     {
-      IWebHost host = new WebHostBuilder()
+      Program.BuildWebHost(args).Run();
+    }
+
+    public static IWebHost BuildWebHost(string[] args) =>
+      WebHost.CreateDefaultBuilder(args)
         .UseContentRoot(Directory.GetCurrentDirectory())
         .UseKestrel()
         .UseIISIntegration()
         .UseStartup<Startup>()
         .UseApplicationInsights()
+        .UseDefaultServiceProvider(options => options.ValidateScopes = false)
         .Build();
-
-      host.Run();
-    }
   }
 }

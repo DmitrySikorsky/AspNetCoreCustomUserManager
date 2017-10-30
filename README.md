@@ -8,6 +8,8 @@ The result looks like this:
 ![Custom ASP.NET Core user manager](http://sikorsky.pro/images/github/aspnetcore-custom-user-manager/result.png)
 *Custom ASP.NET Core user manager*
 
+Updated to use .NET Core 2.0.
+
 ## Using the Application
 
 1. Run the application.

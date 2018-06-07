@@ -1,7 +1,6 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using AspNetCoreCustomUserManager.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreCustomUserManager
@@ -24,10 +23,10 @@ namespace AspNetCoreCustomUserManager
     [HttpPost]
     public IActionResult Login()
     {
-      User user = this.userManager.Validate("Email", "admin@example.com", "admin");
+      ValidateResult validateResult = this.userManager.Validate("Email", "admin@example.com", "admin");
 
-      if (user != null)
-        this.userManager.SignIn(this.HttpContext, user, false);
+      if (validateResult.Success)
+        this.userManager.SignIn(this.HttpContext, validateResult.User, false);
 
       return this.RedirectToAction("Index");
     }

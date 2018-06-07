@@ -22,21 +22,139 @@ namespace AspNetCoreCustomUserManager
       this.storage = storage;
     }
 
-    public User Validate(string loginTypeCode, string identifier, string secret)
+    public SignUpResult SignUp(string name, string credentialTypeCode, string identifier)
     {
-      CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => string.Equals(ct.Code, loginTypeCode, StringComparison.OrdinalIgnoreCase));
+      return this.SignUp(name, credentialTypeCode, identifier, null);
+    }
+
+    public SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret)
+    {
+      User user = new User();
+
+      user.Name = name;
+      user.Created = DateTime.Now;
+      this.storage.Users.Add(user);
+      this.storage.SaveChanges();
+
+      CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
 
       if (credentialType == null)
-        return null;
+        return new SignUpResult(success: false, error: SignUpResultError.CredentialTypeNotFound);
 
-      Credential credential = this.storage.Credentials.FirstOrDefault(
-        c => c.CredentialTypeId == credentialType.Id && string.Equals(c.Identifier, identifier, StringComparison.OrdinalIgnoreCase) && c.Secret == MD5Hasher.ComputeHash(secret)
-      );
+      Credential credential = new Credential();
+
+      credential.UserId = user.Id;
+      credential.CredentialTypeId = credentialType.Id;
+      credential.Identifier = identifier;
+
+      if (!string.IsNullOrEmpty(secret))
+      {
+        byte[] salt = Pbkdf2Hasher.GenerateRandomSalt();
+        string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
+
+        credential.Secret = hash;
+        credential.Extra = Convert.ToBase64String(salt);
+      }
+
+      this.storage.Credentials.Add(credential);
+      this.storage.SaveChanges();
+      return new SignUpResult(user: user, success: true);
+    }
+
+    public void AddToRole(User user, string roleCode)
+    {
+      Role role = this.storage.Roles.FirstOrDefault(r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+
+      if (role == null)
+        return;
+
+      this.AddToRole(user, role);
+    }
+
+    public void AddToRole(User user, Role role)
+    {
+      UserRole userRole = this.storage.UserRoles.Find(user.Id, role.Id);
+
+      if (userRole != null)
+        return;
+
+      userRole = new UserRole();
+      userRole.UserId = user.Id;
+      userRole.RoleId = role.Id;
+      this.storage.UserRoles.Add(userRole);
+      this.storage.SaveChanges();
+    }
+
+    public void RemoveFromRole(User user, string roleCode)
+    {
+      Role role = this.storage.Roles.FirstOrDefault(r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+
+      if (role == null)
+        return;
+
+      this.RemoveFromRole(user, role);
+    }
+
+    public void RemoveFromRole(User user, Role role)
+    {
+      UserRole userRole = this.storage.UserRoles.Find(user.Id, role.Id);
+
+      if (userRole == null)
+        return;
+
+      this.storage.UserRoles.Remove(userRole);
+      this.storage.SaveChanges();
+    }
+
+    public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
+    {
+      CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+
+      if (credentialType == null)
+        return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialTypeNotFound);
+
+      Credential credential = this.storage.Credentials.FirstOrDefault(c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
       if (credential == null)
-        return null;
+        return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialNotFound);
 
-      return this.storage.Users.Find(credential.UserId);
+      byte[] salt = Pbkdf2Hasher.GenerateRandomSalt();
+      string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
+
+      credential.Secret = hash;
+      credential.Extra = Convert.ToBase64String(salt);
+      this.storage.Credentials.Update(credential);
+      this.storage.SaveChanges();
+      return new ChangeSecretResult(success: true);
+    }
+
+    public ValidateResult Validate(string credentialTypeCode, string identifier)
+    {
+      return this.Validate(credentialTypeCode, identifier, null);
+    }
+
+    public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
+    {
+      CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+
+      if (credentialType == null)
+        return new ValidateResult(success: false, error: ValidateResultError.CredentialTypeNotFound);
+
+      Credential credential = this.storage.Credentials.FirstOrDefault(c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+
+      if (credential == null)
+        return new ValidateResult(success: false, error: ValidateResultError.CredentialNotFound);
+
+      if (!string.IsNullOrEmpty(secret))
+      {
+        byte[] salt = Convert.FromBase64String(credential.Extra);
+        string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
+
+        if (credential.Secret != hash)
+          return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
+      }
+
+      return new ValidateResult(user: this.storage.Users.Find(credential.UserId), success: true);
     }
 
     public async void SignIn(HttpContext httpContext, User user, bool isPersistent = false)

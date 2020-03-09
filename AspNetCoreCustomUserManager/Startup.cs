@@ -9,27 +9,23 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 namespace AspNetCoreCustomUserManager
 {
   public class Startup
   {
-    private IConfigurationRoot configuration;
+    public IConfiguration Configuration { get; }
 
-    public Startup(IHostingEnvironment hostingEnvironment)
+    public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
-      IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
-        .SetBasePath(hostingEnvironment.ContentRootPath)
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-      this.configuration = configurationBuilder.Build();
+      this.Configuration = configuration;
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddDbContext<Storage>(
-        options => options.UseSqlite(this.configuration.GetConnectionString("DefaultConnection"))
+        options => options.UseSqlite(this.Configuration.GetConnectionString("DefaultConnection"))
       );
 
       services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -43,21 +39,15 @@ namespace AspNetCoreCustomUserManager
       services.AddMvc();
     }
 
-    public void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory)
+    public void Configure(IApplicationBuilder applicationBuilder, IWebHostEnvironment webHostEnvironment)
     {
-      loggerFactory.AddConsole();
-      loggerFactory.AddDebug();
-
-      if (hostingEnvironment.IsDevelopment())
-      {
+      if (webHostEnvironment.IsDevelopment())
         applicationBuilder.UseDeveloperExceptionPage();
-        applicationBuilder.UseDatabaseErrorPage();
-        applicationBuilder.UseBrowserLink();
-      }
 
       applicationBuilder.UseAuthentication();
       applicationBuilder.UseStaticFiles();
-      applicationBuilder.UseMvcWithDefaultRoute();
+      applicationBuilder.UseRouting();
+      applicationBuilder.UseEndpoints(builder => builder.MapDefaultControllerRoute());
     }
   }
 }

@@ -36,7 +36,7 @@ namespace AspNetCoreCustomUserManager
       this.storage.Users.Add(user);
       this.storage.SaveChanges();
 
-      CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+      CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => ct.Code.ToLower() == credentialTypeCode.ToLower());
 
       if (credentialType == null)
         return new SignUpResult(success: false, error: SignUpResultError.CredentialTypeNotFound);
@@ -63,7 +63,7 @@ namespace AspNetCoreCustomUserManager
 
     public void AddToRole(User user, string roleCode)
     {
-      Role role = this.storage.Roles.FirstOrDefault(r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+      Role role = this.storage.Roles.FirstOrDefault(r => r.Code.ToLower() ==  roleCode.ToLower());
 
       if (role == null)
         return;
@@ -87,7 +87,7 @@ namespace AspNetCoreCustomUserManager
 
     public void RemoveFromRole(User user, string roleCode)
     {
-      Role role = this.storage.Roles.FirstOrDefault(r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+      Role role = this.storage.Roles.FirstOrDefault(r => r.Code.ToLower() == roleCode.ToLower());
 
       if (role == null)
         return;
@@ -108,7 +108,7 @@ namespace AspNetCoreCustomUserManager
 
     public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
     {
-      CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+      CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => ct.Code.ToLower() == credentialTypeCode.ToLower());
 
       if (credentialType == null)
         return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialTypeNotFound);
@@ -135,7 +135,7 @@ namespace AspNetCoreCustomUserManager
 
     public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
     {
-      CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+      CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => ct.Code.ToLower() == credentialTypeCode.ToLower());
 
       if (credentialType == null)
         return new ValidateResult(success: false, error: ValidateResultError.CredentialTypeNotFound);

@@ -1,11 +1,11 @@
 # ASP.NET Core Custom User Manager
 This is a demo web application for the
-“[ASP.NET Core Custom User Manager](http://sikorsky.pro/en/blog/aspnet-core-custom-user-manager)”
-post on the [Dmitry Sikorsky’s blog](http://sikorsky.pro/en/blog). It demonstrates how to build custom
+“[ASP.NET Core Custom User Manager](https://medium.com/@dmitry.a.sikorsky/asp-net-core-custom-user-manager-a7206e718a90)”
+post on the [Dmitry Sikorsky’s blog](https://medium.com/@dmitry.a.sikorsky). It demonstrates how to build custom
 user manager on ASP.NET Core if you don’t want to use Identity.
 
 The result looks like this:
-![Custom ASP.NET Core user manager](http://sikorsky.pro/images/github/aspnetcore-custom-user-manager/result.png)
+![Custom ASP.NET Core user manager](result.png)
 *Custom ASP.NET Core user manager*
 
 Updated to use .NET Core 3.1.

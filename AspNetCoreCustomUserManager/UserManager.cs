@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using AspNetCoreCustomUserManager.Data;
 using AspNetCoreCustomUserManager.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -157,7 +158,7 @@ namespace AspNetCoreCustomUserManager
       return new ValidateResult(user: this.storage.Users.Find(credential.UserId), success: true);
     }
 
-    public async void SignIn(HttpContext httpContext, User user, bool isPersistent = false)
+    public async Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
     {
       ClaimsIdentity identity = new ClaimsIdentity(this.GetUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
       ClaimsPrincipal principal = new ClaimsPrincipal(identity);
@@ -167,7 +168,7 @@ namespace AspNetCoreCustomUserManager
       );
     }
 
-    public async void SignOut(HttpContext httpContext)
+    public async Task SignOut(HttpContext httpContext)
     {
       await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }

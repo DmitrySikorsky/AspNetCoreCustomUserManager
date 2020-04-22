@@ -1,6 +1,7 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Threading.Tasks;
 using AspNetCoreCustomUserManager.Models;
 using Microsoft.AspNetCore.Http;
 
@@ -75,8 +76,8 @@ namespace AspNetCoreCustomUserManager
     ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret);
     ValidateResult Validate(string credentialTypeCode, string identifier);
     ValidateResult Validate(string credentialTypeCode, string identifier, string secret);
-    void SignIn(HttpContext httpContext, User user, bool isPersistent = false);
-    void SignOut(HttpContext httpContext);
+    Task SignIn(HttpContext httpContext, User user, bool isPersistent = false);
+    Task SignOut(HttpContext httpContext);
     int GetCurrentUserId(HttpContext httpContext);
     User GetCurrentUser(HttpContext httpContext);
   }

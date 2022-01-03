@@ -8,7 +8,7 @@ The result looks like this:
 ![Custom ASP.NET Core user manager](result.png)
 *Custom ASP.NET Core user manager*
 
-Updated to use .NET Core 3.1.
+Updated to use .NET Core 6.
 
 ## Using the Application
 
